@@ -3,14 +3,9 @@ import { RootState } from "../index.ts";
 import axios from "axios";
 
 export interface User {
-  id: number;
+  id: string;
   name: string;
-  username: string;
   email: string;
-  adress?: string;
-  phone: string;
-  website: string;
-  company?: string;
 }
 
 export type UsersState = {
@@ -39,6 +34,7 @@ export const userSlice = createSlice({
     builder.addCase(fetchUsers.pending, (state) => {
       state.loading = true;
     });
+
     builder.addCase(
       fetchUsers.fulfilled,
       (state, action: PayloadAction<Array<User>>) => {
@@ -46,20 +42,15 @@ export const userSlice = createSlice({
         state.users = action.payload;
       }
     );
-    builder.addCase(fetchUsers.rejected, (state) => {
-      state.loading = false;
-      state.users = [];
-    });
   },
 
-  reducers: {},
-  // reducers: {
-  //   addUser: (state, action: PayloadAction<User>) => {
-  //     state.push(action.payload);
-  //   },
-  // },
+  reducers: {
+    addUser: (state, action: PayloadAction<User>) => {
+      state.users.push(action.payload);
+    },
+  },
 });
 
-//export const { addUser } = userSlice.actions;
+export const { addUser } = userSlice.actions;
 export const userSelector = (state: RootState) => state.userReducer;
 export default userSlice.reducer;
