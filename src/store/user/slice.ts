@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../index.ts";
+import axios from "axios";
 
 export interface User {
   id: number;
@@ -14,22 +15,21 @@ export interface User {
 
 export type UsersState = {
   loading: boolean;
-  hasErrors: boolean;
   users: User[];
+  hasErrors: boolean;
 };
 
 export const initialState: UsersState = {
   loading: false,
-  hasErrors: false,
   users: [],
+  hasErrors: false,
 };
 
-export const fetchUsers = createAsyncThunk("users/fetchUsers", () => {
-  const res = fetch("https://jsonplaceholder.typicode.com/users").then((data) =>
-    data.json()
-  );
+export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
+  const res = await axios.get("https://jsonplaceholder.typicode.com/users");
+  const data = await res.data;
 
-  return res;
+  return data;
 });
 
 export const userSlice = createSlice({
@@ -46,14 +46,13 @@ export const userSlice = createSlice({
         state.users = action.payload;
       }
     );
-    builder.addCase(fetchUsers.rejected, (state, action) => {
+    builder.addCase(fetchUsers.rejected, (state) => {
       state.loading = false;
       state.users = [];
-      //state.error = action.error.message;
     });
   },
-  
-  reducers: {}
+
+  reducers: {},
   // reducers: {
   //   addUser: (state, action: PayloadAction<User>) => {
   //     state.push(action.payload);
